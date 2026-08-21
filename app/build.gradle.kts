@@ -1,25 +1,26 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
-android {
-    namespace = "com.example.sleepmonitoring"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
+    android {
+        namespace = "com.example.sleepmonitoring"
+        compileSdk {
+            version = release(36) {
+                minorApiLevel = 1
+            }
         }
-    }
 
-    defaultConfig {
-        applicationId = "com.example.sleepmonitoring"
-        minSdk = 26
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        defaultConfig {
+            applicationId = "com.example.sleepmonitoring"
+            minSdk = 23
+            targetSdk = 36
+            versionCode = 1
+            versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
 
     buildTypes {
         release {
@@ -55,4 +56,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(platform("com.google.firebase:firebase-bom:34.18.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+
 }

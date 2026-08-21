@@ -1,4 +1,4 @@
-package DeteccionSueño
+package DeteccionSueño.Analisis
 
 data class DatosAcelerometro(
     val tiempo: Long,

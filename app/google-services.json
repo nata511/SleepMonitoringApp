@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1079795703063",
+    "project_id": "appdreamclue",
+    "storage_bucket": "appdreamclue.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1079795703063:android:d4e0cba5279203ee4aab52",
+        "android_client_info": {
+          "package_name": "com.example.sleepmonitoring"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBx66wB5khLteNh_LtwSA7uWGuKZNcN5gI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

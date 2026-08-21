@@ -1,4 +1,4 @@
-package DeteccionSueño
+package DeteccionSueño.Analisis
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -14,12 +14,16 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 
-class SensorService : Service() , SensorEventListener{
+class SensorService : Service() , SensorEventListener {
 
     override fun onBind(intent: Intent): IBinder? = null
     fun crearNotificacion(): Notification {
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
-            val canal = NotificationChannel("Monitoreo","Monitoreando Actualmente", NotificationManager.IMPORTANCE_LOW)
+            val canal = NotificationChannel(
+                "Monitoreo",
+                "Monitoreando Actualmente",
+                NotificationManager.IMPORTANCE_LOW
+            )
             val system = getSystemService(NotificationManager::class.java).createNotificationChannel(canal)
         }
          return NotificationCompat.Builder(this, "Monitoreo")
@@ -37,7 +41,7 @@ class SensorService : Service() , SensorEventListener{
 
     override fun onCreate(){
         super.onCreate()
-        SensorControl = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        SensorControl = getSystemService(SENSOR_SERVICE) as SensorManager
         Acelerometro = SensorControl.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     }
 
@@ -55,7 +59,12 @@ class SensorService : Service() , SensorEventListener{
             return
         }
         if(datos.sensor.type == Sensor.TYPE_ACCELEROMETER){
-            var valores = DatosAcelerometro(datos.timestamp, datos.values[0], datos.values[1],datos.values[2])
+            var valores = DatosAcelerometro(
+                datos.timestamp,
+                datos.values[0],
+                datos.values[1],
+                datos.values[2]
+            )
             retornarDatos(valores)
         }
     }
@@ -67,7 +76,7 @@ class SensorService : Service() , SensorEventListener{
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
         TODO("Not yet implemented")
     }
-    fun retornarDatos(Datos: DatosAcelerometro): DatosAcelerometro{
+    fun retornarDatos(Datos: DatosAcelerometro): DatosAcelerometro {
         return Datos
     }
 }
