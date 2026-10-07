@@ -1,57 +1,89 @@
 package com.example.sleepmonitoring.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+
+    primary = grafica,
+    primaryContainer = onprimary,
+
+    onPrimaryContainer = iconGlow,
+    onPrimary = letra1,
+
+    secondary = glow,
+    onSecondary = letra2,
+
+    background = panel,
+
+    onSecondaryContainer = cardGlow,
+    secondaryContainer = boton,
+
+    outline = borde,
+
+    tertiary = hover,
+    onTertiary = grid,
+    tertiaryContainer = shadow
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+
+private val BlueColorScheme = darkColorScheme(
+
+    primary = grafica2,
+    primaryContainer = boton2,
+
+    onPrimaryContainer = iconGlow2,
+    onPrimary = letra1_2,
+
+    secondary = glow2,
+    onSecondary = letra2_2,
+
+    background = panel2,
+
+    onSecondaryContainer = cardGlow2,
+    secondaryContainer = boton2,
+
+    outline = borde2,
+
+    tertiary = hover2,
+    onTertiary = grid2,
+    tertiaryContainer = shadow2
 )
+
+
+
+object ConfiguracionTema {
+
+    var tema by mutableStateOf("1")
+        private set
+
+    fun cambiarTema(nuevoTema: String) {
+        tema = nuevoTema
+    }
+}
 
 @Composable
 fun SleepMonitoringTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val esquemaActual = when (ConfiguracionTema.tema) {
+
+        "1" -> DarkColorScheme
+
+        "2" -> BlueColorScheme
+
+        else -> DarkColorScheme
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = esquemaActual,
         typography = Typography,
         content = content
     )

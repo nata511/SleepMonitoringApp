@@ -2,20 +2,17 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+    alias(libs.plugins.ksp)
 }
 
     android {
         namespace = "com.example.sleepmonitoring"
-        compileSdk {
-            version = release(36) {
-                minorApiLevel = 1
-            }
-        }
+        compileSdk = 37
 
         defaultConfig {
             applicationId = "com.example.sleepmonitoring"
-            minSdk = 23
-            targetSdk = 36
+            minSdk = 26
+            targetSdk = 37
             versionCode = 1
             versionName = "1.0"
 
@@ -61,4 +58,19 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
 
+
+    val roomVersion = "2.8.4"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation("com.github.skydoves:landscapist-coil3:2.11.0")
+    implementation("androidx.compose.material:material-icons-core")
+
+    implementation("androidx.work:work-runtime-ktx:2.11.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.6.3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.navigation:navigation-compose:2.8.9")
+    implementation("com.patrykandpatrick.vico:compose:2.1.3")
+    implementation("com.patrykandpatrick.vico:compose-m3:2.1.3")
 }
