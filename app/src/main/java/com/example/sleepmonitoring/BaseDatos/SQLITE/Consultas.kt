@@ -78,7 +78,9 @@ interface Consultas {
         LIMIT 1
     )
     ORDER BY tiempo
-""")
-    suspend fun obtener_datos_angulos(fecha: String): List<HDZC>
+""") suspend fun obtener_datos_angulos(fecha: String): List<HDZC>
+
+    @Query("DELETE FROM Horas")
+    suspend fun borrarHoras()
 
 }

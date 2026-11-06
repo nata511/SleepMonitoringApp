@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import android.app.DatePickerDialog
 import android.content.Context
+import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,13 +60,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.sleepmonitoring.Analisis.DatosCrudos.VerificadorHora
+
+import com.example.sleepmonitoring.Analisis.DatosCrudos.ManejoSensores.ProgramadorSueno
+
 import com.example.sleepmonitoring.BaseDatos.SQLITE.Horas
 import com.example.sleepmonitoring.Controladores.ControladorAlmacenaje
 import com.example.sleepmonitoring.Visual.interfaces.ViesModelyDatas.ViewModelCuestionarioInicial
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.internal.platform.PlatformRegistry
 import java.time.LocalTime
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -278,8 +282,12 @@ fun CuestionarioInicial(
                                             horaFin = viewModel.datosH.horaLevantar
                                         )
                                     )
+                                    Log.d("ENCUESTA", "Horarios guardados, llamando a programar()")
 
-                                    programarVerificador(context)
+
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        ProgramadorSueno.programar(context)
+                                    }
                                     navController.navigate("Principal")
                                 },
                                 modifier = Modifier.weight(1f),
@@ -460,16 +468,3 @@ fun listaDias(viewModel: ViewModelCuestionarioInicial) {
 }
 
 
-fun programarVerificador(context: Context) {
-
-    val trabajo = PeriodicWorkRequestBuilder<VerificadorHora>(
-        15,
-        TimeUnit.MINUTES
-    ).build()
-
-    WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-        "VerificadorHora",
-        ExistingPeriodicWorkPolicy.KEEP,
-        trabajo
-    )
-}

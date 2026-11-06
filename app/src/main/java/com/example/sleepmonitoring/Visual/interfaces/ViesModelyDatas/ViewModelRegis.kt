@@ -48,7 +48,7 @@ class ViewModelRegis: ViewModel() {
             return
         }
         println("ENTRÓ A { SESIÓN")
-        if (datos.contraseña!=datos.confirContra  ) {
+        if (datos.contraseña.trim()!=datos.confirContra.trim()) {
             datos= datos.copy( errorCoincidencia = "La contraseña no coincide")
             return
         }
@@ -64,23 +64,17 @@ class ViewModelRegis: ViewModel() {
                     println(state)
                     return@launch
                 }
-
-
                 datos=datos.copy(cargando = true)
-
-
-            var result= ControladorAlmacenaje.puenteRegistro(datos.correo,datos.contraseña)
-
+                var result= ControladorAlmacenaje.puenteRegistro(datos.correo,datos.contraseña)
                 if (result != null) {
-                    println("🔥 ENVIANDO ERROR AL CHANNEL")
                     eventos.send(RegistroUi.Error(result))
                 } else {
                     navController.navigate("CuestionarioInicial")
                 }
             datos=datos.copy(cargando = false)
-        }catch (e: Exception){
+            }catch (e: Exception){
                 println("ERROR: ${e.message}")
-        }
+            }
         }
 
 }}

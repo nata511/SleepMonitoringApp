@@ -1,15 +1,21 @@
 package com.example.sleepmonitoring.Visual.interfaces.ViesModelyDatas
 
 
+import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
+import com.example.sleepmonitoring.Analisis.DatosCrudos.ManejoSensores.ProgramadorSueno
+import com.example.sleepmonitoring.BaseDatos.SQLITE.AppDataBase
 import com.example.sleepmonitoring.BasesDatosFirebase.ConsulFirebase
 import com.example.sleepmonitoring.BasesDatosFirebase.Usuario
 import com.example.sleepmonitoring.Visual.interfaces.Vistas.ConfiguracionAvatar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.launch
 
@@ -20,7 +26,7 @@ class ViewModelConfiguracion : ViewModel() {
     var nombreFisrt = ""
     var FotoFisrt = ""
     var foto by mutableStateOf("")
-
+    val context= LocalContext
     var generoAvatar by mutableStateOf(ConfiguracionAvatar.genero)
 
     init {
@@ -63,7 +69,7 @@ class ViewModelConfiguracion : ViewModel() {
 
         if (generoAvatar != ConfiguracionAvatar.genero) {
             datos["imagen"] = generoAvatar
-            ConfiguracionAvatar.cambiar(generoAvatar)   // Principal se actualiza al instante
+            ConfiguracionAvatar.cambiar(generoAvatar)
         }
 
         if (datos.isEmpty()) return
@@ -75,8 +81,15 @@ class ViewModelConfiguracion : ViewModel() {
         }
     }
 
-    fun cerrar() {
+    fun cerrar(context: Context) {
         ConfiguracionAvatar.reiniciar()
+        CoroutineScope(Dispatchers.IO).launch {
+            limpiarHoras(context = context)
+        }
         ConsulFirebase.cerrarSesion()
+    }
+    suspend fun limpiarHoras(context: Context) {
+        AppDataBase.getDataBase(context).ConsultasDao().borrarHoras()
+        ProgramadorSueno.programar(context)
     }
 }

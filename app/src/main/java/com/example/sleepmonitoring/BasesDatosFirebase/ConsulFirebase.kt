@@ -1,10 +1,10 @@
 package com.example.sleepmonitoring.BasesDatosFirebase
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import com.example.sleepmonitoring.BaseDatos.SQLITE.Horas
 import com.example.sleepmonitoring.Controladores.ControladorHora
-import com.example.sleepmonitoring.Controladores.ControladorTests
 import com.example.sleepmonitoring.Visual.interfaces.ViesModelyDatas.DatosPrincipal
-import com.example.sleepmonitoring.ui.theme.ConfiguracionTema
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -21,11 +21,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.tasks.await
 import java.time.DayOfWeek
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 
-// Nombres de colecciones: se usan igual al guardar y al leer
 private object Col {
     const val PSQI = "TestPSQI"
     const val ATENEA = "TestAtenea"
@@ -38,7 +39,7 @@ object ConsulFirebase {
     val base = Firebase.firestore
     val identificador = Firebase.auth
 
-    // extraBufferCapacity = 1 para que tryEmit no se pierda
+
     val actualizar = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val actualizarPublico = actualizar.asSharedFlow()
     val estadoTest = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -53,8 +54,7 @@ object ConsulFirebase {
 
     fun invalidarCache() = cache.clear()
 
-    private fun lunesDeEstaSemana(): String =
-        ControladorHora.HoraTexto(LocalDate.now().with(DayOfWeek.MONDAY))
+    private fun lunesDeEstaSemana(): String = ControladorHora.HoraTexto(LocalDate.now().with(DayOfWeek.MONDAY))
 
     private suspend fun semanalRango(ref: CollectionReference, campo: String): MutableMap<String, Long> {
         val res = ref
@@ -108,7 +108,7 @@ object ConsulFirebase {
     suspend fun ObtenerDatosrUsuario(correo: String, contraseña: String): String? {
         return try {
             identificador.signInWithEmailAndPassword(correo, contraseña).await()
-            invalidarCache()   // por si cambió de usuario
+            invalidarCache()
             null
         } catch (e: FirebaseAuthInvalidUserException) {
             "El usuario no existe o la cuenta está deshabilitada"
@@ -125,22 +125,21 @@ object ConsulFirebase {
             "Ocurrió un error inesperado"
         }
     }
-
     suspend fun InsertarUsuario(datos: Usuario) {
         val actual = identificador.currentUser ?: return
         try {
-            base.collection("Usuarios").document(actual.uid).set(datos).await()
+            base.collection("Usuarios").document(actual.uid).set(datos).await   ()
         } catch (e: Exception) {
             Log.e("FB", "InsertarUsuario", e)
         }
     }
-
-    suspend fun ModificarUsuario(datos: MutableMap<String, Any>) {
+    suspend fun ModificarUsuario(datos: MutableMap<String,Any>){
         val actual = identificador.currentUser ?: return
         try {
-            base.collection("Usuarios").document(actual.uid).update(datos).await()
-        } catch (e: Exception) {
-            Log.e("FB", "ModificarUsuario", e)
+            val id = actual.uid
+            base.collection("Usuarios").document(id).update(datos).await()
+        }catch (e: Exception){
+            println(e)
         }
     }
 
@@ -155,11 +154,8 @@ object ConsulFirebase {
         }
     }
     suspend fun ModificarTema(tema: String): Boolean {
-
         val actual = identificador.currentUser ?: return false
-
         return try {
-
             base
                 .collection("Usuarios")
                 .document(actual.uid)
@@ -167,34 +163,13 @@ object ConsulFirebase {
                 .await()
             println("Se modifico tema")
             true
-
         } catch (e: Exception) {
 
             Log.e("FB", "ModificarTema", e)
             false
         }
     }
-    suspend fun ObtenerTema() {
-        val actual = identificador.currentUser ?: return
 
-         try {
-            val doc = base
-                .collection("Usuarios")
-                .document(actual.uid)
-                .get()
-                .await()
-
-            val tema =doc.getString("tema")?: ConfiguracionTema.tema
-             if(tema!= ConfiguracionTema.tema){
-                 ConfiguracionTema.cambiarTema(tema)
-                 println("secambio tema")
-             }
-
-        } catch (e: Exception) {
-            Log.e("FB", "ObtenerTema", e)
-            null
-        }
-    }
     suspend fun obtenerListaDias(): MutableList<Int>? {
         val actual = identificador.currentUser ?: return null
         return try {
@@ -205,6 +180,18 @@ object ConsulFirebase {
                 ?: mutableListOf()
         } catch (e: Exception) {
             Log.e("FB", "obtenerListaDias", e)
+            null
+        }
+    }
+    suspend fun leerHorasFirestore(): Horas? {
+        val uid = identificador.currentUser?.uid ?: return null
+        return try {
+           val doc= base.collection("Usuarios").document(uid).get().await()
+            val ini = doc.getString("horaAcostar") ?: return null
+            val fin = doc.getString("horaLevantar") ?: return null
+            Horas(horaInicio = ini, horaFin = fin)
+        } catch (e: Exception) {
+            Log.e("FIRESTORE", "No se pudieron leer los horarios", e)
             null
         }
     }
@@ -345,7 +332,7 @@ object ConsulFirebase {
         try {
             batch.set(referencia1, datos)
             batch.set(referencia2, datos12)
-            batch.set(referencia3, mapaDatos, SetOptions.merge())   // no falla si no existe
+            batch.set(referencia3, mapaDatos, SetOptions.merge())
             batch.commit().await()
             invalidarCache()
             estadoTest.tryEmit(Unit)
@@ -414,15 +401,7 @@ object ConsulFirebase {
             null
         }
     }
-    suspend fun ModificarImagen(imagen: String) {
 
-        val usuario = identificador.currentUser ?: return
-
-        base.collection("Usuarios")
-            .document(usuario.uid)
-            .update("imagen", imagen)
-            .await()
-    }
 
     suspend fun datosSemanalSomnolencia(): MutableMap<String, Long>? {
         val actual = identificador.currentUser ?: return null
@@ -476,17 +455,7 @@ object ConsulFirebase {
         }
     }
 
-    suspend fun datosSemanalMCTQ(): MutableMap<String, Long>? {
-        val actual = identificador.currentUser ?: return null
-        return try {
-            val doc = base.collection("Tests").document(actual.uid).collection(Col.MCTQ)
-                .document(DatosConstantes.fecha).get().await()
-            if (doc.exists()) mutableMapOf("JetLag" to (doc.getDouble("jetLag") ?: 0.0).toLong()) else null
-        } catch (e: Exception) {
-            Log.e("FB", "datosSemanalMCTQ", e)
-            null
-        }
-    }
+
 
     suspend fun DatosParaMCTQ(lista: MutableList<Int>): TemporalMCTQ? {
         val actual = identificador.currentUser ?: return null
@@ -546,25 +515,12 @@ object ConsulFirebase {
             null
         }
     }
-
-
-    suspend fun insertarResumenUsuario(datos: ResumenUsuarios) {
-        val actual = identificador.currentUser ?: return
-        try {
-            base.collection("grupos").document("123456")
-                .collection("resumen").document(actual.uid)
-                .set(datos).await()
-        } catch (e: Exception) {
-            Log.e("FB", "insertarResumenUsuario", e)
-        }
-    }
-
     fun obtenerResumenUsuarios() {
         val actual = identificador.currentUser ?: return
         registroResumen?.remove()
         registroResumen = base.collection("ResumenTests").document(actual.uid)
             .addSnapshotListener { snapshots, error ->
-                if (error != null) {
+                if (error != null){
                     Log.e("FB", "obtenerResumenUsuarios", error)
                     return@addSnapshotListener
                 }
@@ -589,4 +545,5 @@ object DatosConstantes {
     var cuespsqi=false
     var somno=false
     var sinDatos=false
+    var Encendido by mutableStateOf(false)
 }

@@ -1,5 +1,6 @@
 package com.example.sleepmonitoring.Visual.interfaces.Vistas
 
+import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -21,6 +22,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -41,8 +43,7 @@ fun InicioSesion(
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
-
-    // Solo para el diseño del snackbar: distingue mensaje de error vs. éxito
+    val context = LocalContext.current
     var esError by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
@@ -102,7 +103,7 @@ fun InicioSesion(
         ) {
             Head()
             Spacer(modifier = Modifier.height(8.dp))
-            Card_Info(viewModel, navController)
+            Card_Info(viewModel, navController,context)
         }
 
         SnackbarHost(
@@ -228,7 +229,7 @@ private fun MensajeError(texto: String) {
 
 
 @Composable
-fun Card_Info(viewModel: ViewModelInicio, navController: NavController) {
+fun Card_Info(viewModel: ViewModelInicio, navController: NavController, context: Context) {
     var mostrarContraseña by remember { mutableStateOf(false) }
 
     val formaCampo = RoundedCornerShape(14.dp)
@@ -381,7 +382,7 @@ fun Card_Info(viewModel: ViewModelInicio, navController: NavController) {
         Button(
             onClick = {
                 println("CLICK LOGIN")
-                viewModel.IniciarSesion(navController)
+                viewModel.IniciarSesion(navController, context =context)
             },
             shape = RoundedCornerShape(14.dp),
             elevation = ButtonDefaults.buttonElevation(

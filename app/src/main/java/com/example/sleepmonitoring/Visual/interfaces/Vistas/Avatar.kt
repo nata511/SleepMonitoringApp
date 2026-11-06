@@ -31,11 +31,11 @@ fun estadoPorDuracion(minutos: Long): EstadoSueno {
 
 object CatalogoAvatares {
 
-    // tema 1 -> personas 2 | tema 2 -> personas 1
+
     fun familia(tema: String): String = if (tema == "1") "2" else "1"
 
     fun obtener(tema: String, genero: String, estado: EstadoSueno): Int {
-        val clave = familia(tema) + genero.uppercase()   // "1H", "1M", "2H", "2M"
+        val clave = familia(tema) + genero.uppercase()
         return when (clave) {
             "1H" -> when (estado) {
                 EstadoSueno.BIEN_DESCANSADO -> R.drawable.iconopersona1h_bien_descansado
@@ -55,7 +55,7 @@ object CatalogoAvatares {
                 EstadoSueno.MUY_CANSADO -> R.drawable.iconopersona2h_muy_cansada
                 EstadoSueno.MUERTO -> R.drawable.iconopersona2h_muerto
             }
-            else -> when (estado) { // "2M"
+            else -> when (estado) {
                 EstadoSueno.BIEN_DESCANSADO -> R.drawable.iconopersona2m_bien_descansado
                 EstadoSueno.ALGO_CANSADO -> R.drawable.iconopersona2m_algo_cansado
                 EstadoSueno.MUY_CANSADO -> R.drawable.iconopersona2m_muy_cansada
@@ -100,7 +100,7 @@ object ConfiguracionAvatar {
         private set
     var cargado = false
         private set
-
+    
     fun cargar(valor: String) {
         genero = if (valor == "M") "M" else "H"
         cargado = true

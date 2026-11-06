@@ -13,11 +13,7 @@ import com.example.sleepmonitoring.Controladores.Navegacion
 import com.example.sleepmonitoring.ui.theme.SleepMonitoringTheme
 import com.google.firebase.auth.FirebaseAuth
 import android.Manifest
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.sleepmonitoring.Analisis.DatosCrudos.VerificadorHora
-import java.util.concurrent.TimeUnit
+
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
@@ -54,6 +50,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 
 
 }

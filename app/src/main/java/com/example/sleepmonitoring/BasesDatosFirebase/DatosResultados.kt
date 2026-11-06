@@ -56,6 +56,7 @@ data class Dimesion(
         "Somnolencia al conducir"
     ),
 
+
     val descripcionesAtenea: MutableList<String> = mutableListOf(
         "Dificultad para conciliar",
         "Frecuencia de despertares",

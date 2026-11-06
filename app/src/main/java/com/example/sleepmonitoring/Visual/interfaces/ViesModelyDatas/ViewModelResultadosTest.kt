@@ -25,8 +25,7 @@ class ViewModelResultadosTest : ViewModel() {
     private var tipoCargado = -1
 
     fun Deteccion(tipo: Int) {
-        // en Deteccion(), envolviendo todo el cuerpo de la corrutina
-        try { /* cuerpo actual */
+        try {
         if (tipo !in 0..3 || tipo == tipoCargado) return
         tipoCargado = tipo
 

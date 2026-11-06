@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -62,6 +63,7 @@ fun ConfiguracionVisual(
     selectedItem: Int,
     onTabSelected: (Int) -> Unit
 ) {
+    val context=LocalContext.current
     val colores = MaterialTheme.colorScheme
     val tipos = MaterialTheme.typography
 
@@ -105,7 +107,9 @@ fun ConfiguracionVisual(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Box(
                             modifier = Modifier
                                 .width(5.dp)
@@ -186,7 +190,7 @@ fun ConfiguracionVisual(
                 ) {
                     var ini = "A"
 
-                    if (viewModel.nombre != "" && selectorFoto==null) {
+                    if (viewModel.nombre != "" || selectorFoto==null) {
                         ini = viewModel.nombre[0].toString()
                     }
 
@@ -306,8 +310,9 @@ fun ConfiguracionVisual(
                     .height(56.dp)
                     .cajaInterna(RoundedCornerShape(16.dp))
                     .clickable {
+
                         navController.navigate("Inicio")
-                        viewModel.cerrar()
+                        viewModel.cerrar(context)
                     },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -626,58 +631,6 @@ private fun TemaVisual(
 }
 
 @Composable
-private fun SelectorImagenes(
-    imagenes: List<Pair<String, Int>>,
-    seleccionada: String,
-    onSeleccionar: (String) -> Unit
-) {
-    val colores = MaterialTheme.colorScheme
-
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = "Imagen de perfil",
-            color = colores.onPrimary,
-            style = MaterialTheme.typography.labelMedium
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            imagenes.forEach { (id, imagen) ->
-                val activa = id == seleccionada
-
-                Image(
-                    painter = painterResource(id = imagen),
-                    contentDescription = "Imagen de perfil",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(72.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .border(
-                            width = if (activa) 3.dp else 1.dp,
-                            color = if (activa) {
-                                colores.secondary
-                            } else {
-                                colores.secondary.copy(alpha = 0.35f)
-                            },
-                            shape = RoundedCornerShape(14.dp)
-                        )
-                        .clickable {
-                            onSeleccionar(id)
-                        }
-                )
-            }
-        }
-    }
-}
-@Composable
 private fun OpcionAvatar(
     recurso: Int,
     seleccionado: Boolean,
@@ -689,7 +642,7 @@ private fun OpcionAvatar(
 
     Box(
         modifier = modifier
-            .shadow(if (seleccionado) 8.dp else 3.dp, forma)
+            .shadow(if (    seleccionado) 8.dp else 3.dp, forma)
             .clip(forma)
             .background(colores.secondaryContainer)
             .border(
